@@ -2,9 +2,7 @@ package auth
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -61,20 +59,11 @@ func (a *AuthMiddleware) ValidateToken(c *fiber.Ctx) error {
 		})
 	}
 
+	// access tokenとurlをコンテキストに保存
 	url := "https://" + a.config.AUTH0_DOMAIN + "/userinfo"
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Authorization", "Bearer "+authHeaderParts[1])
+	c.Locals("auth0Url", url)
+	c.Locals("validatedAccessToken", authHeaderParts[1])
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	fmt.Println(string(body))
 	fmt.Println(tokenInfo)
 
 	// Go to next middleware:
