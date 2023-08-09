@@ -20,7 +20,7 @@ type createTodoRequest struct {
 }
 
 type createTodoResponse struct {
-	ID string `json:"id"`
+	Message string `json:"message"`
 }
 
 // @Summary Create one todo.
@@ -41,16 +41,17 @@ func (t *TodoController) create(c *fiber.Ctx) error {
 	}
 
 	// create the todo
-	id, err := t.storage.createTodo(req.Title, req.Description, false, c.Context())
+	message, err := t.storage.createTodo(req.Title, req.Description, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to create todo",
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(createTodoResponse{
-		ID: id,
-	})
+	return c.Status(fiber.StatusCreated).JSON(
+		createTodoResponse{
+			message,
+		})
 }
 
 // @Summary Get all todos.
@@ -62,7 +63,7 @@ func (t *TodoController) create(c *fiber.Ctx) error {
 // @Router /todos [get]
 func (t *TodoController) getAll(c *fiber.Ctx) error {
 	// get all todos
-	todos, err := t.storage.getAllTodos(c.Context())
+	todos, err := t.storage.getAllTodos()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to get todos",

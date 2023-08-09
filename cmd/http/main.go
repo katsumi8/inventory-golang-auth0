@@ -2,18 +2,19 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
-	"time"
 
-	"github.com/bmdavis419/tapir-app/config"
-	_ "github.com/bmdavis419/tapir-app/docs"
-	"github.com/bmdavis419/tapir-app/internal/storage"
-	"github.com/bmdavis419/tapir-app/internal/todo"
-	"github.com/bmdavis419/tapir-app/pkg/shutdown"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
+	"github.com/katsumi/inventory_api/config"
+	_ "github.com/katsumi/inventory_api/docs"
+	"github.com/katsumi/inventory_api/internal/storage"
+	"github.com/katsumi/inventory_api/internal/todo"
+	"github.com/katsumi/inventory_api/internal/user"
+	"github.com/katsumi/inventory_api/pkg/shutdown"
 )
 
 // @title Tapir App Template
@@ -71,12 +72,25 @@ func run(env config.EnvVars) (func(), error) {
 }
 
 func buildServer(env config.EnvVars) (*fiber.App, func(), error) {
+	postgreConfig := storage.Config{
+		Host:     env.POSTGRES_HOST,
+		Port:     env.POSTGRES_PORT,
+		Password: env.POSTGRES_PASSWORD,
+		User:     env.POSTGRES_USER,
+		DBName:   env.POSTGRES_NAME,
+		SSLMode:  env.POSTGRES_SSL, // SSLModeもEnvVarsに追加する必要があります
+	}
+
 	// init the storage
-	db, err := storage.BootstrapMongo(env.MONGODB_URI, env.MONGODB_NAME, 10*time.Second)
+	db, err := storage.NewConnection(postgreConfig)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	err = storage.Migrate(db)
+	if err != nil {
+		log.Fatal("Could not migrate users")
+	}
 	// create the fiber app
 	app := fiber.New()
 
@@ -93,11 +107,15 @@ func buildServer(env config.EnvVars) (*fiber.App, func(), error) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	// create the user domain
+	userController := user.NewUserController()
+	user.CreateUserGroup(app, userController, env)
+
+	// create the todo domain
 	todoStore := todo.NewTodoStorage(db)
 	todoController := todo.NewTodoController(todoStore)
 	todo.AddTodoRoutes(app, todoController)
 
 	return app, func() {
-		storage.CloseMongo(db)
+		storage.CloseConnection(db)
 	}, nil
 }
