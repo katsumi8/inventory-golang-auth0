@@ -1,20 +1,33 @@
 package storage
 
 import (
-	"os/user"
+	"database/sql"
 
-	"github.com/katsumi/inventory_api/internal/todo"
-	"gorm.io/gorm"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-type Book struct {
-	ID        uint    `gorm:"primaryKey key;autoIncrement" json:"id"`
-	Author    *string `json:"author"`
-	Title     *string `json:"title"`
-	Publisher *string `json:"publisher"`
-}
+func Migrate(db *sql.DB) error {
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return err
+	}
 
-func Migrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&user.User{}, &Book{}, &todo.Todo{})
-	return err
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations", // マイグレーションファイルのパス
+		"postgres",          // DB名
+		driver,              // ここで先ほど作成したドライバーインスタンスを使用
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := m.Up(); err != nil {
+		if err != migrate.ErrNoChange {
+			return err
+		}
+	}
+
+	return nil
 }

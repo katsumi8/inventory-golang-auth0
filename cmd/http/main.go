@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/swagger"
 	"github.com/katsumi/inventory_api/config"
 	_ "github.com/katsumi/inventory_api/docs"
+	"github.com/katsumi/inventory_api/internal/order"
 	"github.com/katsumi/inventory_api/internal/storage"
 	"github.com/katsumi/inventory_api/internal/todo"
 	"github.com/katsumi/inventory_api/internal/user"
@@ -114,6 +115,11 @@ func buildServer(env config.EnvVars) (*fiber.App, func(), error) {
 	todoStore := todo.NewTodoStorage(db)
 	todoController := todo.NewTodoController(todoStore)
 	todo.AddTodoRoutes(app, todoController)
+
+	// create the order domain
+	orderStore := order.NewOrderStorage(db)
+	orderController := order.NewOrderController(orderStore)
+	order.AddOrderRoutes(app, orderController)
 
 	return app, func() {
 		storage.CloseConnection(db)
