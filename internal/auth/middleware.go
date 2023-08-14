@@ -51,7 +51,7 @@ func (a *AuthMiddleware) ValidateToken(c *fiber.Ctx) error {
 	}
 
 	// Validate the token
-	tokenInfo, err := jwtValidator.ValidateToken(c.Context(), authHeaderParts[1])
+	_, err = jwtValidator.ValidateToken(c.Context(), authHeaderParts[1])
 	if err != nil {
 		fmt.Println(err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -63,8 +63,6 @@ func (a *AuthMiddleware) ValidateToken(c *fiber.Ctx) error {
 	url := "https://" + a.config.AUTH0_DOMAIN + "/userinfo"
 	c.Locals("auth0Url", url)
 	c.Locals("validatedAccessToken", authHeaderParts[1])
-
-	fmt.Println(tokenInfo)
 
 	// Go to next middleware:
 	return c.Next()

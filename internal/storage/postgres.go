@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 var db *sql.DB
@@ -20,21 +18,16 @@ type Config struct {
 	SSLMode  string
 }
 
-func NewConnection(config Config) (*gorm.DB, error) {
+func NewConnection(config Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		config.Host, config.User, config.Password, config.DBName, config.Port, config.SSLMode)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
 	}
 	return db, nil
 }
 
-func CloseConnection(db *gorm.DB) error {
-	sqlDB, err := db.DB()
-	if err != nil {
-		return err
-	}
-
-	return sqlDB.Close()
+func CloseConnection(db *sql.DB) error {
+	return db.Close()
 }

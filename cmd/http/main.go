@@ -87,7 +87,6 @@ func buildServer(env config.EnvVars) (*fiber.App, func(), error) {
 		return nil, nil, err
 	}
 
-	err = storage.Migrate(db)
 	if err != nil {
 		log.Fatal("Could not migrate users")
 	}
@@ -107,7 +106,8 @@ func buildServer(env config.EnvVars) (*fiber.App, func(), error) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	// create the user domain
-	userController := user.NewUserController()
+	userStore := user.NewUserStorage(db)
+	userController := user.NewUserController(userStore)
 	user.CreateUserGroup(app, userController, env)
 
 	// create the todo domain
