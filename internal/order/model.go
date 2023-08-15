@@ -1,6 +1,8 @@
 package order
 
 import (
+	"database/sql"
+	"encoding/json"
 	"time"
 )
 
@@ -15,13 +17,29 @@ const (
 )
 
 type Order struct {
-	ID              uint        `json:"id"`
-	CreatedAt       time.Time   `json:"createdAt"`
-	UpdatedAt       time.Time   `json:"updatedAt"`
-	ProductName     string      `json:"product_name"`
-	Supplier        string      `json:"supplier"`
-	AdditionalNotes string      `json:"additionalNotes,omitempty"`
-	Status          OrderStatus `json:"status"`
-	Quantity        int         `json:"quantity"`
-	UserID          uint        `json:"userId"`
+	ID              uint           `json:"id"`
+	CreatedAt       time.Time      `json:"createdAt"`
+	UpdatedAt       time.Time      `json:"updatedAt"`
+	ProductName     string         `json:"product_name"`
+	Supplier        string         `json:"supplier"`
+	AdditionalNotes sql.NullString `json:"-"`
+	Status          OrderStatus    `json:"status"`
+	Quantity        int            `json:"quantity"`
+	UserID          uint           `json:"user_id"`
+}
+
+func (o Order) MarshalJSON() ([]byte, error) {
+	type Alias Order
+	additionalNotes := ""
+	if o.AdditionalNotes.Valid {
+		additionalNotes = o.AdditionalNotes.String
+	}
+
+	return json.Marshal(&struct {
+		*Alias
+		AdditionalNotes string `json:"additional_notes"`
+	}{
+		Alias:           (*Alias)(&o),
+		AdditionalNotes: additionalNotes,
+	})
 }

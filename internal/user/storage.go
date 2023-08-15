@@ -21,7 +21,7 @@ func (s *UserStorage) createUser(userName, email string, isAdmin bool) (User, er
 		Email:    email,
 		IsAdmin:  isAdmin,
 	}
-	statement := `insert into users(username, email, isAdmin) values($1, $2, $3);`
+	statement := `insert into users(username, email, is_admin) values($1, $2, $3);`
 	_, err := s.db.Exec(statement, user.Username, user.Email, user.IsAdmin)
 	if err != nil {
 		return User{}, err
@@ -50,4 +50,27 @@ func (s *UserStorage) getUserByEmail(email string) (User, error) {
 		return User{}, err
 	}
 	return user, nil
+}
+
+func (s *UserStorage) getAllUsers() ([]User, error) {
+	var users []User
+	statement := `select * from users;`
+	rows, err := s.db.Query(statement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.Id, &user.CreatedAt, &user.UpdatedAt,
+			&user.Username, &user.Email, &user.IsAdmin)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return users, nil
 }

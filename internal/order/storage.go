@@ -14,17 +14,26 @@ func NewOrderStorage(db *sql.DB) *OrderStorage {
 	}
 }
 
-func (s *OrderStorage) createOrder(title, description string, completed bool) (string, error) {
+func (s *OrderStorage) createOrder(productName, supplier, additionalNotes string, quantity int, userId uint) (string, error) {
 	order := Order{
-		ProductName:     title,
-		Supplier:        "test",
-		AdditionalNotes: "test",
-		Quantity:        1,
-		UserID:          1,
+		ProductName: productName,
+		Supplier:    supplier,
+		Quantity:    quantity,
+		UserID:      userId,
 	}
-	statement := `insert into orders(title, description, completed) values($1, $2, $3);`
 
-	_, err := s.db.Exec(statement, order.ProductName, order.Supplier, order.AdditionalNotes, order.Quantity, order.UserID)
+	if additionalNotes != "" {
+		order.AdditionalNotes = sql.NullString{
+			String: additionalNotes,
+			Valid:  true,
+		}
+	}
+
+	statement := `insert into orders(product_name, supplier, additional_notes, quantity, user_id) 
+  values($1, $2, $3, $4, $5);`
+
+	_, err := s.db.Exec(statement, order.ProductName, order.Supplier,
+		order.AdditionalNotes, order.Quantity, order.UserID)
 	if err != nil {
 		return "creation had an error", err
 	}

@@ -41,6 +41,7 @@ type auth0UserResponse struct {
 }
 
 type getUserResponse struct {
+	Id    int64  `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
@@ -156,6 +157,7 @@ func (u *UserController) getMe(c *fiber.Ctx) error {
 			}
 			return c.JSON(
 				getUserResponse{
+					Id:    createdUser.Id,
 					Name:  createdUser.Username,
 					Email: createdUser.Email,
 				})
@@ -168,7 +170,20 @@ func (u *UserController) getMe(c *fiber.Ctx) error {
 
 	return c.JSON(
 		getUserResponse{
+			Id:    userFromDb.Id,
 			Name:  userFromDb.Username,
 			Email: userFromDb.Email,
 		})
+}
+
+func (u *UserController) getAll(c *fiber.Ctx) error {
+	// get all users
+	users, err := u.storage.getAllUsers()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to get todos",
+		})
+	}
+
+	return c.JSON(users)
 }

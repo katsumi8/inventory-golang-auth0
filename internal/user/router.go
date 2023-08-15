@@ -14,5 +14,7 @@ func CreateUserGroup(app *fiber.App, userController *UserController, config conf
 	userGroup.Use(authMiddleware.ValidateToken)
 
 	// auth routes
-	userGroup.Get("/me", userController.profile)
+	userGroup.Get("/me", userController.getMe)
+	userGroup.Get("/check-login", userController.profile)
+	userGroup.Get("/", userController.getAll)
 }
