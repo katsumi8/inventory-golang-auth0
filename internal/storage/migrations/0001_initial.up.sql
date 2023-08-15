@@ -27,5 +27,5 @@ CREATE TABLE IF NOT EXISTS orders (
   additional_notes TEXT,
   status order_status NOT NULL DEFAULT 'Ordered',
   quantity INT NOT NULL,
-  user_id INT REFERENCES users(id),
+  user_id INT REFERENCES users(id)
 );

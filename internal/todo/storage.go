@@ -2,6 +2,7 @@ package todo
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 type TodoStorage struct {
@@ -40,8 +41,10 @@ func (s *TodoStorage) getAllTodos() ([]Todo, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed)
+		err := rows.Scan(&todo.ID, &todo.CreatedAt, &todo.UpdatedAt,
+			&todo.Title, &todo.Description, &todo.Completed)
 		if err != nil {
+			fmt.Println(err)
 			return nil, err
 		}
 		todos = append(todos, todo)

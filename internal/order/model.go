@@ -20,9 +20,8 @@ type Order struct {
 	UpdatedAt       time.Time   `json:"updatedAt"`
 	ProductName     string      `json:"product_name"`
 	Supplier        string      `json:"supplier"`
-	AdditionalNotes *string     `json:"additionalNotes,omitempty"`
+	AdditionalNotes string      `json:"additionalNotes,omitempty"`
 	Status          OrderStatus `json:"status"`
 	Quantity        int         `json:"quantity"`
 	UserID          uint        `json:"userId"`
-	ProductID       uint        `json:"productId"`
 }

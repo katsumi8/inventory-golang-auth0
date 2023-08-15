@@ -88,9 +88,11 @@ func buildServer(env config.EnvVars) (*fiber.App, func(), error) {
 		return nil, nil, err
 	}
 
+	err = storage.Migrate(db)
 	if err != nil {
-		log.Fatal("Could not migrate users")
+		log.Fatalf("Could not migrate users: %v", err)
 	}
+
 	// create the fiber app
 	app := fiber.New()
 

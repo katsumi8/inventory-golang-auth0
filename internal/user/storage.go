@@ -42,7 +42,8 @@ func (s *UserStorage) getUserByEmail(email string) (User, error) {
 	var user User
 	statement := `select * from users where email = $1;`
 	row := s.db.QueryRow(statement, email)
-	if err := row.Scan(&user.Id, &user.Username, &user.Email, &user.IsAdmin); err != nil {
+	if err := row.Scan(&user.Id, &user.CreatedAt, &user.UpdatedAt,
+		&user.Username, &user.Email, &user.IsAdmin); err != nil {
 		if err == sql.ErrNoRows {
 			return User{}, errors.New("USER_NOT_FOUND")
 		}

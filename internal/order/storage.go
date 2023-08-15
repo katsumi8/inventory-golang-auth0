@@ -16,13 +16,15 @@ func NewOrderStorage(db *sql.DB) *OrderStorage {
 
 func (s *OrderStorage) createOrder(title, description string, completed bool) (string, error) {
 	order := Order{
-		Title:       title,
-		Description: description,
-		Completed:   completed,
+		ProductName:     title,
+		Supplier:        "test",
+		AdditionalNotes: "test",
+		Quantity:        1,
+		UserID:          1,
 	}
 	statement := `insert into orders(title, description, completed) values($1, $2, $3);`
 
-	_, err := s.db.Exec(statement, order.Title, order.Description, order.Completed)
+	_, err := s.db.Exec(statement, order.ProductName, order.Supplier, order.AdditionalNotes, order.Quantity, order.UserID)
 	if err != nil {
 		return "creation had an error", err
 	}
@@ -40,10 +42,14 @@ func (s *OrderStorage) getAllOrders() ([]Order, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var order Order
-		err := rows.Scan(&order.ID, &order.Title, &order.Description, &order.Completed)
+		err := rows.Scan(&order.ID, &order.CreatedAt, &order.UpdatedAt,
+			&order.ProductName, &order.Supplier, &order.AdditionalNotes,
+			&order.Status, &order.Quantity, &order.UserID)
+
 		if err != nil {
 			return nil, err
 		}
+
 		orders = append(orders, order)
 	}
 	if err = rows.Err(); err != nil {
