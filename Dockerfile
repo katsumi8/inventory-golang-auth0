@@ -18,6 +18,9 @@ FROM scratch
 
 COPY --from=builder ["/build/http-server", "/http-server"]
 
+# Copy migration files
+COPY --from=builder ["/build/internal/storage/migrations", "/internal/storage/migrations"]
+
 ENV GO_ENV=production
 
 CMD ["/http-server"]
