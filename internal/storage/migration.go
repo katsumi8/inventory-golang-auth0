@@ -2,6 +2,8 @@ package storage
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -13,6 +15,8 @@ func Migrate(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	cwd, _ := os.Getwd()
+	fmt.Println("Current working directory:", cwd)
 
 	m, err := migrate.NewWithDatabaseInstance(
 		"file://internal/storage/migrations", // マイグレーションファイルのパス
