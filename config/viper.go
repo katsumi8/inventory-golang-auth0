@@ -17,6 +17,7 @@ type EnvVars struct {
 	POSTGRES_SSL      string `mapstructure:"POSTGRES_SSL"`
 	AUTH0_DOMAIN      string `mapstructure:"AUTH0_DOMAIN"`
 	AUTH0_AUDIENCE    string `mapstructure:"AUTH0_AUDIENCE"`
+	FRONTEND_ORIGIN   string `mapstructure:"FRONTEND_ORIGIN"`
 }
 
 func LoadConfig() (config EnvVars, err error) {

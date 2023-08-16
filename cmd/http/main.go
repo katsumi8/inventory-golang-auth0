@@ -97,7 +97,10 @@ func buildServer(env config.EnvVars) (*fiber.App, func(), error) {
 	app := fiber.New()
 
 	// add middleware
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     env.FRONTEND_ORIGIN, // これはフロントエンドのアドレスです
+		AllowCredentials: true,
+	}))
 	app.Use(logger.New())
 
 	// add health check

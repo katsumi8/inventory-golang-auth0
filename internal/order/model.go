@@ -20,12 +20,12 @@ type Order struct {
 	ID              uint           `json:"id"`
 	CreatedAt       time.Time      `json:"createdAt"`
 	UpdatedAt       time.Time      `json:"updatedAt"`
-	ProductName     string         `json:"product_name"`
+	ProductName     string         `json:"productName"`
 	Supplier        string         `json:"supplier"`
 	AdditionalNotes sql.NullString `json:"-"`
 	Status          OrderStatus    `json:"status"`
 	Quantity        int            `json:"quantity"`
-	UserID          uint           `json:"user_id"`
+	UserID          uint           `json:"userId"`
 }
 
 func (o Order) MarshalJSON() ([]byte, error) {
@@ -37,7 +37,7 @@ func (o Order) MarshalJSON() ([]byte, error) {
 
 	return json.Marshal(&struct {
 		*Alias
-		AdditionalNotes string `json:"additional_notes"`
+		AdditionalNotes string `json:"additionalNotes"`
 	}{
 		Alias:           (*Alias)(&o),
 		AdditionalNotes: additionalNotes,

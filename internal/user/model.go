@@ -8,5 +8,5 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
-	IsAdmin   bool      `json:"is_admin"`
+	IsAdmin   bool      `json:"isAdmin"`
 }

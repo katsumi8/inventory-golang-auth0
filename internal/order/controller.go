@@ -17,10 +17,10 @@ func NewOrderController(storage *OrderStorage) *OrderController {
 }
 
 type createOrderRequest struct {
-	ProductName     string      `json:"product_name"`
+	ProductName     string      `json:"productName"`
 	Supplier        string      `json:"supplier"`
 	AdditionalNotes string      `json:"additionalNotes,omitempty"`
-	Status          OrderStatus `json:"status"`
+	Status          OrderStatus `json:"status,omitempty"`
 	Quantity        int         `json:"quantity"`
 	UserID          uint        `json:"userId"`
 }
@@ -78,5 +78,7 @@ func (t *OrderController) getAll(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(orders)
+	return c.JSON(fiber.Map{
+		"data": orders,
+	})
 }
