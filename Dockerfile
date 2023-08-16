@@ -16,6 +16,9 @@ RUN task build
 
 FROM scratch
 
+# Copy CA certificates from builder to the new image
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
 COPY --from=builder ["/build/http-server", "/http-server"]
 
 # Copy migration files
