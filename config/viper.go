@@ -30,6 +30,10 @@ func LoadConfig() (config EnvVars, err error) {
 			POSTGRES_NAME:     os.Getenv("POSTGRES_NAME"),
 			POSTGRES_USER:     os.Getenv("POSTGRES_USER"),
 			POSTGRES_PASSWORD: os.Getenv("POSTGRES_PASSWORD"),
+			POSTGRES_SSL:      os.Getenv("POSTGRES_SSL"),
+			AUTH0_DOMAIN:      os.Getenv("AUTH0_DOMAIN"),
+			AUTH0_AUDIENCE:    os.Getenv("AUTH0_AUDIENCE"),
+			FRONTEND_ORIGIN:   os.Getenv("FRONTEND_ORIGIN"),
 		}, nil
 	}
 
