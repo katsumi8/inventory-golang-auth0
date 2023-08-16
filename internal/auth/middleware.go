@@ -53,7 +53,7 @@ func (a *AuthMiddleware) ValidateToken(c *fiber.Ctx) error {
 	// Validate the token
 	_, err = jwtValidator.ValidateToken(c.Context(), authHeaderParts[1])
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error validating token: %v\n", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Invalid token",
 		})
